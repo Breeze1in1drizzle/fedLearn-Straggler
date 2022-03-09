@@ -89,9 +89,10 @@ def mnist_noniid_modified(dataset, num_users, min_train=200,
 
     """
 
-    random_seed = np.random.randint(low=30000, high=40000)
-    print("random_seed: ", random_seed)
-    np.random.seed(random_seed)  # 之前固定了0
+    # random_seed = np.random.randint(low=30000, high=40000)
+    # print("random_seed: ", random_seed)
+    # np.random.seed(random_seed)  # 之前固定了0
+    np.random.seed(0)
 
     num_shards, num_imgs = 10, 6000  # 10类图片，每类6000张
     # min_train = 200  # 最少200张
@@ -160,9 +161,10 @@ def mnist_noniid_modified_Vtest(dataset, num_users, min_train=200, max_train=100
     每个 client 80% 数据为一类图片， 20% 为其他类图片
     返回的dict_users最终要放到 torch 的 dataloader里面进行数据加载 (non-iid)
     """
-    random_seed = np.random.randint(low=30000, high=40000)
-    print("random_seed: ", random_seed)
-    np.random.seed(random_seed)  # 之前固定了0
+    # random_seed = np.random.randint(low=30000, high=40000)
+    # print("random_seed: ", random_seed)
+    # np.random.seed(random_seed)  # 之前固定了0
+    np.random.seed(0)
 
     num_shards, num_imgs = 10, 6000  # 10类图片，每类6000张
 
@@ -274,7 +276,7 @@ def cifar_iid_modified(dataset, num_users):
     return dict_users
 
 
-def cifar_noniid(dataset, num_users, min_train=200, max_train=1000, main_label_prop=0.8, other=9, map_file=None):
+def cifar_noniid(dataset, num_users, min_train=50, max_train=1000, main_label_prop=0.8, other=9, map_file=None):
     """
     non-i.i.d数据生成
 
@@ -285,9 +287,10 @@ def cifar_noniid(dataset, num_users, min_train=200, max_train=1000, main_label_p
     每个client 80%数据为一类图片， 20%为其他类图片
 
     """
-    random_seed = np.random.randint(low=30000, high=40000)
-    print("random_seed: ", random_seed)
-    np.random.seed(random_seed)  # 之前固定了0
+    # random_seed = np.random.randint(low=30000, high=40000)
+    # print("random_seed: ", random_seed)
+    # np.random.seed(random_seed)  # 之前固定了0
+    np.random.seed(0)
 
     num_shards, num_imgs = 10, 5000  # 10类图片，每类6000张
 
@@ -312,17 +315,17 @@ def cifar_noniid(dataset, num_users, min_train=200, max_train=1000, main_label_p
     # idxs:           [--------------------]    idx代表图片在原始数据集中的索引
     # idxs_labels[1]: [0, 0, 0, ... 9, 9, 9]    label代表图片对应的数字标签
 
-    df_path = conf.DATASET_PATH + 'decision_making_dataset/MAP_ID2DataSize_Fairness2022V1/map_id_to_datasize_iid-original.csv'
-    df = pd.DataFrame(pd.read_csv(df_path), index=None)
+    # df_path = conf.DATASET_PATH + 'decision_making_dataset/MAP_ID2DataSize_Fairness2022V1/map_id_to_datasize_iid-original.csv'
+    # df = pd.DataFrame(pd.read_csv(df_path), index=None)
 
     for i in range(num_users):
         # 这里的随机数量，要修改成指定的数量-->有num_users个设备(users)，对应index的那个user指定一个datasize（通过读取文件实现）
-        # datasize = np.random.randint(min_train, max_train + 1)  # 随机数量
-        datasize = int(map_file.iloc[i, map_file.columns.get_loc('datasize')])
+        datasize = np.random.randint(min_train, max_train + 1)  # 随机数量
+        # datasize = int(map_file.iloc[i, map_file.columns.get_loc('datasize')])
         # main_label = int(map_file.iloc[i, map_file.columns.get_loc('main_label')])    # 已经确定好的
         main_label = np.random.randint(0, 10)  # 0-9随机选一个为主类
         print("user: %d, data_size: %d, main_label: %d" % (i, datasize, main_label))
-        df.loc[i, ['main_label']] = main_label
+        # df.loc[i, ['main_label']] = main_label
 
         main_label_size = int(np.floor(datasize * main_label_prop))
         other_label_size = datasize - main_label_size
@@ -350,7 +353,7 @@ def cifar_noniid(dataset, num_users, min_train=200, max_train=1000, main_label_p
             count += 1
 
         dict_users[i] = np.concatenate((dict_users[i], other_label_dict), axis=0)
-    df.to_csv(df_path, index=None)
+    # df.to_csv(df_path, index=None)
     return dict_users
 
 

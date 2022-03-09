@@ -46,7 +46,7 @@ from fedLearnSim.models.test import test_img
 
 
 def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_list_linucb.txt",
-                     args_dataset='mnist', args_usernumber=57, args_iid=False, map_file=None):
+                     args_dataset='mnist', args_usernumber=100, args_iid=False, map_file=None):
     '''
     这个函数是执行 Federated Learning Simulation 的 main 函数
     这里我需要做的应该主要是2个内容：
@@ -58,7 +58,7 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
 
     # valid_list = np.loadtxt('noniid_valid/valid_list_fedcs.txt')
     # valid_list = np.loadtxt('valid_list_linucb.txt')                # 这个是 iid 情况的 devices selection 文件
-    valid_list = np.loadtxt(valid_list_path, encoding='utf_8_sig')
+    # valid_list = np.loadtxt(valid_list_path, encoding='utf_8_sig')
     # 10*200 --> 猜测应该是 200 communication rounds，10个设备中每行（即每个round）设备数值不为-1的就可以挑选
 
     # load args
@@ -71,9 +71,6 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
     args.local_ep = 10
 
     print("cuda is available : ", torch.cuda.is_available())        # 本次实验使用的 GPU 型号为 RTX 2060 SUPER，内存专用8G、共享8G
-
-
-
 
     print("load dataset")
     #####################################################################################################################
@@ -120,14 +117,7 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
     #####################################################################################################################
     #####################################################################################################################
 
-
-
-
-
     img_size = dataset_train[0][0].shape
-
-
-
 
     print("build model")
     #####################################################################################################################
@@ -157,9 +147,6 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
     #####################################################################################################################
     #####################################################################################################################
 
-
-
-
     print("global_net:\n", global_net)
 
     global_net.train()
@@ -185,19 +172,18 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
     last_loss_avg = 0
     last_acc_global = 0
 
-
-    args.epochs = 200           # 默认是10，现在设置成200，测试一下 cifar10 准确率能到多少——Jan 17 2022 23:19:50
+    args.epochs = 200           # 默认是10，现在设置成200，测试一下 cifar-10 准确率能到多少——Jan 17 2022 23:19:50
     print("args.epochs: ", args.epochs)                  # default --> 10
     for round in range(args.epochs):
         loss_locals = []
         if not args.all_clients:
             w_locals = []
-        round_idx = valid_list[round]       # valid_list 两百行 --> 200 round      即 round_idx是单独一行（one round）的数据（10个数值）
-        user_idx_this_round = round_idx[np.where(round_idx != -1)]      # 一行数据中，等于-1的不选，其它的选上
+        # round_idx = valid_list[round]       # valid_list 两百行 --> 200 round      即 round_idx是单独一行（one round）的数据（10个数值）
+        # user_idx_this_round = round_idx[np.where(round_idx != -1)]      # 一行数据中，等于-1的不选，其它的选上
         # print("user_idx_this_round:\n", user_idx_this_round)
 
-        # 随机
-        # user_idx_this_round = np.random.choice(range(args.num_users), 10, replace=False)  # 在num_users里面选m个
+        # 随机    # 暂时不模拟掉线情况
+        user_idx_this_round = np.random.choice(range(args.num_users), 10, replace=False)  # 在num_users里面选m个
 
         # print("dict_user:\n", type(dict_users), '\n', dict_users)
         # total_data_sum = 0      # 所有设备datasize相加
@@ -211,6 +197,8 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
                 # print("ix: ", ix)
                 total_data_sum += len(dict_users[ix])
             # print("total_data_sum: ", total_data_sum)
+
+            # Local Training start
             for idx in user_idx_this_round:     # 遍历可选的设备
                 # local updates?
                 # print("dataset_train: ", dataset_train.shape)
@@ -225,18 +213,13 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
                 else:
                     w_locals.append(copy.deepcopy(weight))      # append    # 根据user_idx_this_round的顺序 append 上去
                 loss_locals.append(copy.deepcopy(loss))
+            # Local Training end
 
-            # datasize = float(map_file.iloc[i, map_file.columns.get_loc('datasize')])
-            # datasize_sum = float(map_file['datasize'].sum())
-            # update global weights
-
-
+            # Global Model Aggregation
             w_glob = FedAvgV1(w=w_locals, total_data_sum=total_data_sum,
                             user_idx_this_round=user_idx_this_round,
                             dict_users=dict_users)
-
-
-            # w_glob = FedAvg(w=w_locals)   # 聚合模型得到全局模型
+            # w_glob = FedAvg(w=w_locals)   # 聚合模型得到全局模型    # 这个方法是原本没有加datasize权重的FedAvg
 
             # copy weight to net_glob
             global_net.load_state_dict(w_glob)
@@ -250,11 +233,11 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
             print('Round {:3d}, Average loss {:.3f}, Global acc: {:.3f}, valid {:3d}'
                   .format(round, loss_avg, acc_test, len(user_idx_this_round)))
         else:
-
             print('Round {:3d}, Average loss {:.3f}, Global acc: {:.3f} 0 !'
                   .format(round, last_loss_avg, last_acc_global))
             loss_avg_client.append(last_loss_avg)
             acc_global_model.append(last_acc_global)
+
     # training
     #####################################################################################################################
     #####################################################################################################################
@@ -275,22 +258,7 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
     plt.show()
     # plt.savefig('acc_random_{}_{}_E{}_C{}_iid{}.png'.format(args.dataset, args.model, args.epochs, args.frac, args.iid))
 
-    np_valid_number_list = np.array(valid_number_list)
-    # 保存loss和acc
-    np.savetxt('res/cifar_iid/loss_{}_{}_{}_E{}_C{}_iid_{}.txt'.format(result_str, args.dataset, args.model,
-                                                                       args.epochs, args.frac, args.iid), loss_avg_client)
-    np.savetxt('res/cifar_iid/acc_{}_{}_{}_E{}_C{}_iid_{}.txt'.format(result_str, args.dataset, args.model, args.epochs,
-                                                                      args.frac, args.iid), acc_global_model)
-    # np.savetxt('res/cifar_iid/valid_{}_{}_{}_E{}_C{}_iid_{}.txt'.format(result_str, args.dataset, args.model, args.epochs,
-    #                                                                   args.frac, args.iid), np_valid_number_list)
-
-
-    # # testing
-    # global_net.eval()
-    # acc_train, loss_avg_client = test_img(global_net, dataset_train, args)
-    # acc_test, loss_test = test_img(global_net, dataset_test, args)
-    # print("Training accuracy: {:.2f}".format(acc_train))
-    # print("Testing accuracy: {:.2f}".format(acc_test))
+    # np_valid_number_list = np.array(valid_number_list)
 
 
 def multiSimulateMain():
@@ -303,8 +271,8 @@ def multiSimulateMain():
     # 映射表 设备id --> datasize
     # map_filePath = conf.DATASET_PATH + 'decision_making_dataset/MAP_ID2DataSize2022V1/map_id_to_datasize.csv'
     map_filePath = conf.DATASET_PATH + 'decision_making_dataset/MAP_ID2DataSize2022V2/map_id_to_datasize.csv'
-    df_MAP_ID2DATASIZE = pd.DataFrame(pd.read_csv(map_filePath), index=None)
-    args_usernumber = len(df_MAP_ID2DATASIZE)
+    # df_MAP_ID2DATASIZE = pd.DataFrame(pd.read_csv(map_filePath), index=None)
+    # args_usernumber = len(df_MAP_ID2DATASIZE)
 
     # 定义算法名字
     linucb_str = 'linucb'
@@ -323,20 +291,18 @@ def multiSimulateMain():
     fedcsPath_iid = folderPath_iid + 'valid_list_' + fedcs_str + '.txt'
     randomPath_iid = folderPath_iid + 'valid_list_' + random_str + '.txt'
 
-
-
-
+    FedLearnSimulate(args_dataset='cifar', args_model='resnet', valid_list_path=linucbPath, args_iid=False)
     ########################################################################################################################
     ##########################     new         #####################################################################
     # non-iid cifar resnet
-    FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
-                     valid_list_path=linucbPath, alg_str=linucb_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
-    FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
-                     valid_list_path=fedcsPath, alg_str=fedcs_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
-    FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
-                     valid_list_path=randomPath, alg_str=random_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
-    FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
-                     valid_list_path=ucbPath, alg_str=ucb_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
+    # FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
+    #                  valid_list_path=linucbPath, alg_str=linucb_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
+    # FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
+    #                  valid_list_path=fedcsPath, alg_str=fedcs_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
+    # FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
+    #                  valid_list_path=randomPath, alg_str=random_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
+    # FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
+    #                  valid_list_path=ucbPath, alg_str=ucb_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
 
     print("multi-simulation end")
 
