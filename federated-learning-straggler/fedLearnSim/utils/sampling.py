@@ -185,15 +185,7 @@ def mnist_noniid_modified_Vtest(dataset, num_users, min_train=200, max_train=100
     idxs_labels = idxs_labels[:, idxs_labels[1, :].argsort()]
     idxs = idxs_labels[0, :]
 
-    # # sort labels       # 这一段与labels相关，如何理解？
-    # idxs_labels = np.vstack((idxs, labels))         #   #垂直堆叠   ###我的理解：这个是构造映射 idxs是标记符号，labels是从数据集里得到的按原本顺序排列的ground-truth labels
-    # # print("idxs_labels[1, :].argsort()\n", idxs_labels[1, :].argsort())
-    # idxs_labels = idxs_labels[:, idxs_labels[1, :].argsort()]       # argsort-->排大小，然后提取其对应的索引index
-    # idxs = idxs_labels[0, :]
-
-    # idxs:           [--------------------]    idx代表图片在原始数据集中的索引
-    # idxs_labels[1]: [0, 0, 0, ... 9, 9, 9]    label代表图片对应的数字标签
-
+    # 每个user，也就是每个devices，
     for i in range(num_users):
         datasize = np.random.randint(min_train, max_train + 1)  # 随机数量
         main_label = np.random.randint(0, 10)  # 0-9随机选一个为主类
@@ -207,7 +199,7 @@ def mnist_noniid_modified_Vtest(dataset, num_users, min_train=200, max_train=100
         idx_begin = np.random.randint(0, num_imgs - main_label_size) + main_label * num_imgs
         # print("idx_begin: %d, begin class: %d, end class: %d" %(idx_begin, idxs_labels[1][idx_begin], idxs_labels[1][idx_begin + main_label_size]))
         dict_users[i] = np.concatenate((dict_users[i],      # concatenate, axis=0 --> 上下拼接，dict_users在上，idxs在下
-                                        idxs[idx_begin : idx_begin+main_label_size]), axis=0)
+                                        idxs[idx_begin:(idx_begin+main_label_size)]), axis=0)
 
         # other label idx array
         other_label_dict = np.zeros(other_label_size, dtype='int64')
