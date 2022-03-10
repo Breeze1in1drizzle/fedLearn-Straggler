@@ -1,12 +1,6 @@
 '''
 Created on March 9 2022 14:52:43
 @author(s): HuangLab
-
-今天需要完成的是把这些代码精简化，然后确保能够跑通
-需要注意，non-iid数据的拆分，依然可以考虑用高斯分布进行拆分
-把sampling.py文件中的随机拆分的non-iid方法改成高斯分布拆分（并且固定一种拆分方式-->固定种子）
-
-然后明天再把模拟时间的代码写完，就完成了初步的 FL simulation
 '''
 
 import matplotlib
@@ -40,18 +34,10 @@ from fedLearnSim.models.Fed import FedAvg, FedAvgV1
 from fedLearnSim.models.test import test_img
 
 
-# settings
-# mnist noniid:  --dataset mnist --num_channels 1 --model cnn --epochs 200 --gpu 0
-# cifar iid: --dataset cifar --iid --num_channels 3 --model cnn --epochs 50 --gpu 0
-
-
 def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_list_linucb.txt",
                      args_dataset='mnist', args_usernumber=100, args_iid=False, map_file=None):
     '''
     这个函数是执行 Federated Learning Simulation 的 main 函数
-    这里我需要做的应该主要是2个内容：
-    ①划分dataset（iid & non-iid）跑 mnist & cifar；（似乎有划分的代码了，我只需要看懂）
-    ②理解valid_list_linucb
     '''
     # 保存文本的时候使用，此时是 LinUCB 方法
     result_str = alg_str
@@ -183,7 +169,7 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
         # print("user_idx_this_round:\n", user_idx_this_round)
 
         # 随机    # 暂时不模拟掉线情况
-        user_idx_this_round = np.random.choice(range(args.num_users), 10, replace=False)  # 在num_users里面选m个
+        user_idx_this_round = np.random.choice(range(args.num_users), 10, replace=False)  # 在num_users里面选m个(m==10)
 
         # print("dict_user:\n", type(dict_users), '\n', dict_users)
         # total_data_sum = 0      # 所有设备datasize相加
@@ -262,47 +248,9 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
 
 
 def multiSimulateMain():
-    basicPath      = conf.FL_PATH
 
-    folderPath_iid = basicPath + 'simulation/valid_list_data/2022Jan24_10chosen_ruixin_change_constrain/valid_iid/'# iid
-
-    folderPath = basicPath + 'simulation/valid_list_data/2022Jan24_10chosen_ruixin_change_constrain/valid_niid/'
-
-    # 映射表 设备id --> datasize
-    # map_filePath = conf.DATASET_PATH + 'decision_making_dataset/MAP_ID2DataSize2022V1/map_id_to_datasize.csv'
-    map_filePath = conf.DATASET_PATH + 'decision_making_dataset/MAP_ID2DataSize2022V2/map_id_to_datasize.csv'
-    # df_MAP_ID2DATASIZE = pd.DataFrame(pd.read_csv(map_filePath), index=None)
-    # args_usernumber = len(df_MAP_ID2DATASIZE)
-
-    # 定义算法名字
-    linucb_str = 'linucb'
-    ucb_str = 'ucb'
-    fedcs_str = 'fedcs'
-    random_str = 'random'
-
-    # 实验文本保存路径
-    linucbPath = folderPath + 'valid_list_' + linucb_str + '.txt'
-    ucbPath = folderPath + 'valid_list_' + ucb_str + '.txt'
-    fedcsPath = folderPath + 'valid_list_' + fedcs_str + '.txt'
-    randomPath = folderPath + 'valid_list_' + random_str + '.txt'
-
-    linucbPath_iid = folderPath_iid + 'valid_list_' + linucb_str + '.txt'
-    ucbPath_iid = folderPath_iid + 'valid_list_' + ucb_str + '.txt'
-    fedcsPath_iid = folderPath_iid + 'valid_list_' + fedcs_str + '.txt'
-    randomPath_iid = folderPath_iid + 'valid_list_' + random_str + '.txt'
-
-    FedLearnSimulate(args_dataset='cifar', args_model='resnet', valid_list_path=linucbPath, args_iid=False)
-    ########################################################################################################################
-    ##########################     new         #####################################################################
-    # non-iid cifar resnet
-    # FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
-    #                  valid_list_path=linucbPath, alg_str=linucb_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
-    # FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
-    #                  valid_list_path=fedcsPath, alg_str=fedcs_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
-    # FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
-    #                  valid_list_path=randomPath, alg_str=random_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
-    # FedLearnSimulate(args_dataset='cifar', args_usernumber=args_usernumber, args_model='resnet',
-    #                  valid_list_path=ucbPath, alg_str=ucb_str, args_iid=False, map_file=df_MAP_ID2DATASIZE)
+    # 设置一共10个，然后随机从10个里面选10个，起始也就是不考虑选设备。如果要考虑选设备的情况，可以把设备总数提高
+    FedLearnSimulate(args_dataset='cifar', args_model='resnet', args_usernumber=10, args_iid=False)
 
     print("multi-simulation end")
 
