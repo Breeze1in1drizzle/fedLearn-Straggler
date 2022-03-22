@@ -112,8 +112,8 @@ def mnist_noniid_modified(dataset, num_users, min_train=200,
     # idxs_labels[1]: [0, 0, 0, ... 9, 9, 9]    label代表图片对应的数字标签
     for i in range(num_users):
         # 这里的随机数量，要修改成指定的数量-->有num_users个设备(users)，对应index的那个user指定一个datasize（通过读取文件实现）
-        # datasize = np.random.randint(min_train, max_train + 1)  # 随机数量
-        datasize = int(map_file.iloc[i, map_file.columns.get_loc('datasize')])  # map_file['datasize'].sum()
+        datasize = np.random.randint(min_train, max_train + 1)  # 随机数量
+        # datasize = int(map_file.iloc[i, map_file.columns.get_loc('datasize')])  # map_file['datasize'].sum()
         main_label = np.random.randint(0, 10)  # 0-9随机选一个为主类
         print("user: %d, data_size: %d, main_label: %d" %(i, datasize, main_label))
 

@@ -46,7 +46,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../ClientSelectionFed-Breeze/edgeCSFproject" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -54,7 +54,7 @@
       <recent name="D:\myworkspace\github_workspace\fedLearn-Straggler\federated-learning-straggler" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.sim_fed_main">
+  <component name="RunManager" selected="Python.timeSim">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="federated-learning-straggler" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -99,8 +99,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="timeSim" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="federated-learning-straggler" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fedLearnSim/utils" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fedLearnSim/utils/timeSim.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.timeSim" />
         <item itemvalue="Python.sim_fed_main" />
       </list>
     </recent_temporary>
@@ -119,6 +142,10 @@
       <workItem from="1646808399856" duration="4897000" />
       <workItem from="1646817090140" duration="10021000" />
       <workItem from="1646997222788" duration="1662000" />
+      <workItem from="1647316262764" duration="3223000" />
+      <workItem from="1647763249411" duration="4942000" />
+      <workItem from="1647864388034" duration="2033000" />
+      <workItem from="1647915599618" duration="17390000" />
     </task>
     <servers />
   </component>
@@ -138,6 +165,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/federated_learning_straggler$sim_fed_main.coverage" NAME="sim_fed_main Coverage Results" MODIFIED="1646829264661" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fedLearnSim/simulation" />
+    <SUITE FILE_PATH="coverage/federated_learning_straggler$sim_fed_main.coverage" NAME="sim_fed_main Coverage Results" MODIFIED="1647942788456" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fedLearnSim/simulation" />
+    <SUITE FILE_PATH="coverage/federated_learning_straggler$timeSim.coverage" NAME="timeSim Coverage Results" MODIFIED="1647946227833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fedLearnSim/utils" />
   </component>
 </project>
