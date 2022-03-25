@@ -194,6 +194,8 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
                 local = LocalUpdate(args=args, dataset=dataset_train,
                                     idxs=dict_users[idx])
                 weight, loss = local.train(net=copy.deepcopy(global_net).to(args.device))
+                # print("weight type: ", type(weight))
+                # print(weight)
                 if args.all_clients:
                     w_locals[idx] = copy.deepcopy(weight)
                 else:

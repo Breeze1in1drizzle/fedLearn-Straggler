@@ -46,9 +46,18 @@ class LocalUpdate(object):
                 # trans = tv.transforms.ToTensor()  # Jan 18 2022 11:1:30
                 # images = trans(images)
                 net.zero_grad()
+
                 log_probs = net(images)
                 loss = self.loss_func(log_probs, labels)
                 loss.backward()
+
+                ##############################
+                # print("temp tensor")
+                # for name, temp_params in net.named_parameters():
+                #     gradients = temp_params.grad
+                #     print(temp_params.grad)
+                ##############################
+
                 optimizer.step()
                 if self.args.verbose and batch_idx % 10 == 0:
                     print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
