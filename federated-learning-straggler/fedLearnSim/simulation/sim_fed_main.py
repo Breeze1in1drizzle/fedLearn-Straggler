@@ -23,7 +23,6 @@ import configuration as conf
 # 把 sys path 添加需要 import 的文件夹
 sys.path.append(conf.ROOT_PATH + 'fedLearn/')
 
-
 from fedLearnSim.utils.sampling import mnist_iid, cifar_iid, mnist_noniid, cifar_noniid
 from fedLearnSim.utils.sampling import mnist_iid_modified, cifar_iid_modified, mnist_noniid_modified
 from fedLearnSim.utils.options import args_parser
@@ -252,7 +251,10 @@ def FedLearnSimulate(alg_str='linucb', args_model='cnn', valid_list_path="valid_
 def multiSimulateMain():
 
     # 设置一共10个，然后随机从10个里面选10个，起始也就是不考虑选设备。如果要考虑选设备的情况，可以把设备总数提高
-    FedLearnSimulate(args_dataset='cifar', args_model='resnet', args_usernumber=10, args_iid=False)
+    #FedLearnSimulate(args_dataset='cifar', args_model='resnet', args_usernumber=10, args_iid=False) #CUDA out of memoryen
+    #FedLearnSimulate(args_dataset='cifar', args_model='mlp', args_usernumber=10, args_iid=False)
+    #FedLearnSimulate(args_dataset='cifar', args_model='cnn', args_usernumber=10, args_iid=False)
+    FedLearnSimulate(args_dataset='mnist', args_model='cnn', args_usernumber=10, args_iid=False)
 
     print("multi-simulation end")
 
